@@ -21,7 +21,7 @@ function sayhello() {
     response.end("Hello World");
 }
 
-// 注册
+// 注册，TODO：这里没处理重复注册的问题，后续会再加个接口，判断是否注册过，但这个逻辑后端不管
 function register(response, request) {
     var form = new formidable.IncomingForm();
     form.parse(request, function (err, fields, files) {
@@ -43,9 +43,9 @@ function register(response, request) {
                 headers: {
                     "content-type": "application/json",
                 },
-                body: JSON.stringify(user)
+                body: user
             }, function (error, response, body) {
-                if (!error && response.statusCode == 200) {
+                if (!error && response.statusCode == 200 || response.statusCode == 201) {
                     tempResponse.writeHead(200, { "Content-Type": "application/json" });
                     tempResponse.end(JSON.stringify(user));
                 } else {
@@ -166,7 +166,7 @@ function addmission(response, request) {
      * job_pubdate: 发布日期
      * job_pubtime: 时间戳
      * job_timeout: 有效期，永久有效为-1
-     * job_target: 目标的key
+     * user_key: 目标的key
      */
     var form = new formidable.IncomingForm();
     form.parse(request, function (err, fields, files) {

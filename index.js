@@ -7,6 +7,7 @@ var requestHandler = require("./requestHandler");
 
 var handle = {}
 handle["/helloworld"] = requestHandler.sayhello;
+handle["/register"] = requestHandler.register;
 handle["/login"] = requestHandler.login;
 handle["/checkin"] = requestHandler.checkin;
 handle["/job/add"] = requestHandler.addmission;
