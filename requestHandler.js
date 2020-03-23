@@ -101,12 +101,12 @@ function login(response, request) {
                             // 没有就建一个
                             global.user_dict = {};
                         }
-                        // TODO: 这里一个账号其实能登陆不止一个人，但目前懒得弄
+                        // TODO(已处理): 这里一个账号其实能登陆不止一个人，但目前懒得弄
                         // 要处理这件事，也简单，字典替换成 username:uuid 就行了
                         // 判断登录状态对比uuid来判断，重复登录就把uuid换掉。
                         var uid = uuid.v1(); // 生成一个token返回给前端
                         var expiretime = 1000 * 60 * 60 * 24; // 登录token有效24小时
-                        global.user_dict[uid] = 1; // 登陆了，记到全局变量里面
+                        global.user_dict[fields.user_name] = uid; // 登陆了，记到全局变量里面
                         setTimeout(function () {
                             delete global.user_dict[uid];
                         }, expiretime);
@@ -143,7 +143,7 @@ function checkin(response, request) {
         } else if (!fields.user_name) {
             errmanager.usererr(response);
         } else {
-            if (global.user_dict && global.user_dict[fields.user_uid]) {
+            if (islogin(fields)) {
                 errmanager.success(response);
             } else {
                 errmanager.loginerr(response);
@@ -179,7 +179,7 @@ function addmission(response, request) {
             // 需要用户的server酱key，但是不存
             errmanager.keyerror(response);
         } else {
-            if (global.user_dict && global.user_dict[fields.user_uid]) {
+            if (islogin(fields)) {
                 if (fields.job_text) {
                     if (fields.job_schedule || fields.job_cron) {
                         if (fields.job_timeout) {
@@ -204,14 +204,50 @@ function addmission(response, request) {
     });
 }
 
-// 查看历史job
+// TODO: 查看历史job，未完成
 function history(response, request) {
 
 }
 
-// 移走数据库里的job记录
+// TODO：移走数据库里的job记录，未完成
 function removemission(response, request) {
+    var form = new formidable.IncomingForm();
+    form.parse(request, function (err, fields, files) {
+        if (err) {
+            errmanager.formerr(response, err);
+        } else if (!fields.user_name) {
+            errmanager.usererr(response);
+        } else {
+            if (islogin(fields)) {
+                errmanager.success(response);
+            } else {
+                errmanager.loginerr(response);
+            }
+        }
+    });
+}
 
+// 是否注册了，未完成
+function hasregistered(response, request) {
+    var form = new formidable.IncomingForm();
+    form.parse(request, function (err, fields, files) {
+        if (err) {
+            errmanager.formerr(response, err);
+        } else if (!fields.user_name) {
+            errmanager.usererr(response);
+        } else {
+            if (islogin(fields)) {
+                errmanager.success(response);
+            } else {
+                errmanager.loginerr(response);
+            }
+        }
+    });
+}
+
+// 是否登录了
+function islogin(fields) {
+    return global.user_dict && global.user_dict[fields.user_name] === fields.user_uid;
 }
 
 exports.sayhello = sayhello;
