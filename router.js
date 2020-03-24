@@ -1,4 +1,3 @@
-var fs = require("fs");
 var path = require("path");
 
 global.rootpath = path.resolve();
@@ -17,30 +16,6 @@ function route(handle, parse, request, response) {
     if (typeof handle[pathname] === 'function') {
         handle[pathname](response, request, parseobj, queryparams); // request参数不一定需要
     } else {
-        readStatic(response, pathname);
-    }
-}
-
-function readStatic(response, pathname) {
-    var filepath = path.join(rootpath, pathname);
-    checkValid(response, pathname);
-    fs.stat(filepath, function (err, stats) {
-        if (err) {
-            // 发送404响应
-            response.writeHead(404);
-            response.end("404 Not Found.");
-        } else {
-            // 发送200响应
-            response.writeHead(200);
-            // response是一个writeStream对象，fs读取html后，可以用pipe方法直接写入
-            fs.createReadStream(filepath).pipe(response);
-        }
-    });
-}
-
-function checkValid(response, pathname) {
-    if (!pathname === '/favicon.ico' && !pathname.startsWith('/static')) {
-        // 除接口外，只允许访问static文件夹下的内容
         response.writeHead(404);
         response.end("404 Not Found.");
     }

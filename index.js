@@ -10,6 +10,8 @@ handle["/helloworld"] = requestHandler.sayhello;
 handle["/register"] = requestHandler.register;
 handle["/login"] = requestHandler.login;
 handle["/checkin"] = requestHandler.checkin;
+handle["/history"] = requestHandler.history;
+handle["/register/check"] = requestHandler.hasregised;
 handle["/job/add"] = requestHandler.addmission;
 
 server.start(router.route, handle);

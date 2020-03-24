@@ -204,13 +204,8 @@ function addmission(response, request) {
     });
 }
 
-// TODO: 查看历史job，未完成
+// 查看历史job
 function history(response, request) {
-
-}
-
-// TODO：移走数据库里的job记录，未完成
-function removemission(response, request) {
     var form = new formidable.IncomingForm();
     form.parse(request, function (err, fields, files) {
         if (err) {
@@ -219,7 +214,37 @@ function removemission(response, request) {
             errmanager.usererr(response);
         } else {
             if (islogin(fields)) {
-                errmanager.success(response);
+                var esbody = {
+                    size: 1000,
+                    query: {
+                        query_string: {
+                            query: 'user_name:' + fields.user_name
+                        }
+                    }
+                }
+                let tempResponse = response;
+                rq.post({
+                    url: es_url + es_index_job + '*' + es_method_search,
+                    method: 'POST',
+                    json: true,
+                    headers: {
+                        "content-type": "application/json",
+                    },
+                    body: esbody
+                }, function (error, response, body) {
+                    if (!error && response.statusCode == 200) {
+                        tempResponse.writeHead(200, { "Content-Type": "application/json" });
+                        tempResponse.end(JSON.stringify(response.body.hits.hits));
+                    } else {
+                        if (!error) {
+                            // es层面的错误
+                            errmanager.eserr(tempResponse, response.body);
+                        } else {
+                            // http层面的错误
+                            errmanager.resterr(tempResponse, error);
+                        }
+                    }
+                });
             } else {
                 errmanager.loginerr(response);
             }
@@ -227,7 +252,7 @@ function removemission(response, request) {
     });
 }
 
-// 是否注册了，未完成
+// 是否注册了
 function hasregistered(response, request) {
     var form = new formidable.IncomingForm();
     form.parse(request, function (err, fields, files) {
@@ -236,11 +261,40 @@ function hasregistered(response, request) {
         } else if (!fields.user_name) {
             errmanager.usererr(response);
         } else {
-            if (islogin(fields)) {
-                errmanager.success(response);
-            } else {
-                errmanager.loginerr(response);
+            var esbody = {
+                query: {
+                    query_string: {
+                        query: 'user_name:' + fields.user_name
+                    }
+                }
             }
+            let tempResponse = response;
+            rq.post({
+                url: es_url + es_index_user + es_method_search,
+                method: 'POST',
+                json: true,
+                headers: {
+                    "content-type": "application/json",
+                },
+                body: esbody
+            }, function (error, response, body) {
+                if (!error && response.statusCode == 200) {
+                    tempResponse.writeHead(200, { "Content-Type": "application/json" });
+                    var hasregised = response.body.hits.hits[0] ? true : false;
+                    var respJson = {
+                        result: hasregised
+                    }
+                    tempResponse.end(JSON.stringify(respJson));
+                } else {
+                    if (!error) {
+                        // es层面的错误
+                        errmanager.eserr(tempResponse, response.body);
+                    } else {
+                        // http层面的错误
+                        errmanager.resterr(tempResponse, error);
+                    }
+                }
+            });
         }
     });
 }
@@ -255,3 +309,5 @@ exports.register = register;
 exports.login = login;
 exports.checkin = checkin;
 exports.addmission = addmission;
+exports.history = history;
+exports.hasregised = hasregistered;
