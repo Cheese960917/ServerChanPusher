@@ -36,17 +36,23 @@ start.bat
 ```
 
 ## 接口
-1. `/login` 
+1. `/user/login` 
 登录，post，body举例： 
 ``` json
 "user_name":"aabb", "user_pw":"wdnmd"
 ```
 返回时会有一个token，添加任务要用到。
 
-2. `/checkin` 
+2. `/user/register/check`
+查看是否注册过，需要 `user_name`
+
+3. `/user/register`
+注册，需要用户名密码，同登录
+
+4. `/user/checkin` 
 检查是否在线，需要 `user_name` 和 `user_uid` 自己用可以无视
 
-3. `/job/add` 
+5. `/job/add` 
 添加任务，json的key如下：
 
 `user_name` 必须
@@ -71,8 +77,5 @@ start.bat
 
 `job_timeout` 如果有定时任务，这个就是必须的，最好不要添加不会取消永远在运行的任务，因为服务端不负责持久化，所以没有接口用来关闭这些任务
 
-4. `/history`
+6. `/job/history`
 查看历史记录，需要和checkin一样的信息
-
-5. `/register/check`
-查看是否注册过，需要 `user_name`
