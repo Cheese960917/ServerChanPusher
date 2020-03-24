@@ -1,1 +1,1 @@
-:npm install formidable
+cnpm install

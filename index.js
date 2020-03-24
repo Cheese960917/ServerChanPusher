@@ -3,15 +3,13 @@ var server = require("./server");
 var router = require("./router");
 var requestHandler = require("./requestHandler");
 
-// global.workpath = 'C:\\workspace\\vscode\\cusnodejs';
-
 var handle = {}
-handle["/helloworld"] = requestHandler.sayhello;
-handle["/register"] = requestHandler.register;
-handle["/login"] = requestHandler.login;
-handle["/checkin"] = requestHandler.checkin;
-handle["/history"] = requestHandler.history;
-handle["/register/check"] = requestHandler.hasregised;
+handle["/test/helloworld"] = requestHandler.sayhello;
+handle["/user/register"] = requestHandler.register;
+handle["/user/login"] = requestHandler.login;
+handle["/user/checkin"] = requestHandler.checkin;
+handle["/job/history"] = requestHandler.history;
+handle["/user/register/check"] = requestHandler.hasregised;
 handle["/job/add"] = requestHandler.addmission;
 
 server.start(router.route, handle);

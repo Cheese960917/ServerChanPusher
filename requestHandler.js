@@ -1,7 +1,6 @@
 /* 这个类存储把所有接口替换成方法，提供出去，配置在index
     response 传到这里处理，非阻塞方法中直接放在回调中处理 */
 
-// var fs = require('fs');
 var formidable = require('formidable');
 var rq = require('request');
 var errmanager = require('./errManager');
@@ -95,6 +94,10 @@ function login(response, request) {
                 body: esbody
             }, function (error, response, body) {
                 if (!error && response.statusCode == 200) {
+                    if (!response.body.hits.hits[0]) {
+                        errmanager.usererr(tempResponse);
+                        return;
+                    }
                     var src = response.body.hits.hits[0]['_source'];
                     if (src.user_name === fields.user_name && src.user_pw === fields.user_pw) {
                         if (!global.user_dict) {

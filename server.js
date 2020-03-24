@@ -9,9 +9,11 @@ function start(route, handle) {
         try {
             // 不管遇到什么bug，都不要怕，微笑着catch住它！
             route(handle, parse, request, response);
-        } catch {
-            response.writeHead(404, { "Content-Type": "text/plain" });
-            response.end;
+        } catch (e) {
+            // 这里很少生效，可能是错误抛不到这里来
+            console.log(e);
+            response.writeHead(500);
+            response.end('Exception Happened');
         }
     }
     db.inituser();
